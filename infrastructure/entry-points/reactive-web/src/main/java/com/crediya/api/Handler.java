@@ -1,5 +1,6 @@
 package com.crediya.api;
 
+import com.crediya.api.dto.UserExistResponseDTO;
 import com.crediya.api.dto.UserRequestDTO;
 import com.crediya.api.mapper.UserMapper;
 import com.crediya.usecase.user.UserUseCase;
@@ -16,7 +17,7 @@ public class Handler {
 
     private final UserUseCase userUseCase;
 
-   // @Transactional
+   @Transactional
     public Mono<ServerResponse> createUser(ServerRequest serverRequest) {
 
         return serverRequest.bodyToMono(UserRequestDTO.class)
@@ -25,5 +26,14 @@ public class Handler {
                 .flatMap(savedUser -> ServerResponse.ok().bodyValue(savedUser))
                 .switchIfEmpty(ServerResponse.badRequest().bodyValue("No se pudo crear el usuario")) // evita el null
                 .onErrorResume(e -> ServerResponse.badRequest().bodyValue(e.getMessage()));
+    }
+
+    @Transactional
+    public Mono<ServerResponse> existUser(ServerRequest serverRequest) {
+
+        Long id = Long.valueOf(serverRequest.pathVariable("id"));
+        return userUseCase.existUser(id)
+                .map(UserExistResponseDTO::new)
+                .flatMap(exists -> ServerResponse.ok().bodyValue(exists));
     }
 }

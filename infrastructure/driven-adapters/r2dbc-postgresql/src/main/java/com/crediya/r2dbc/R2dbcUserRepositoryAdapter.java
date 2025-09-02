@@ -36,4 +36,9 @@ public class R2dbcUserRepositoryAdapter extends ReactiveAdapterOperations<
        return repository.existsByEmail(email);
     }
 
+    @Override
+    public Mono<Boolean> existsByUserId(Long id) {
+        return repository.existsById(id);
+    }
+
 }

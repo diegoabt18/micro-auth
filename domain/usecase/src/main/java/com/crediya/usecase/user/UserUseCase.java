@@ -13,17 +13,28 @@ public class UserUseCase {
 
 
     public Mono<Users> registerUser(Users user) {
-        System.out.println("llego al metodo useCase ");
-
+        System.out.println("Creacion de usuarios");
         return userRepository.existsByEmail(user.getEmail())
                 .flatMap(exists -> {
                     if (exists) {
-                        System.out.println("entra al if de existe");
+                        System.out.println("Correo ya ha sido registrado");
                         return Mono.error(new UserInvalidException("El correo ya está registrado: " + user.getEmail()));
                     }
-                    System.out.println("paso la validacion de correo");
+                    System.out.println("Guardando usuario en bases de datos");
                     System.out.println(user.getBirthDate());
                     return userRepository.save(user);
+                });
+    }
+
+    public Mono<Boolean> existUser(Long id) {
+        System.out.println("Consultado si existe el usuario: " + id);
+        return userRepository.existsByUserId(id)
+                .doOnNext(exists -> {
+                    if (exists) {
+                        System.out.println("El usuario con id " + id + " ya existe");
+                    } else {
+                        System.out.println("El usuario con id " + id + " no existe");
+                    }
                 });
     }
 
